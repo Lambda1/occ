@@ -1,4 +1,4 @@
-#include "VirtualScreen.h"
+﻿#include "VirtualScreen.h"
 
 #include <cstdlib>
 #include <cassert>
@@ -11,25 +11,48 @@ namespace occ
 {
 	VirtualScreen::VirtualScreen(const uint32_t width, const uint32_t height, const uint8_t frameBufferNum):
 		m_screenWidth(width), m_screenHeight(height), m_frameBufferNum(frameBufferNum),
-		m_currentFrameBuffer(0u), m_pScreens(frameBufferNum, NULL)
+		m_currentFrameBuffer(0u), m_pScreens(frameBufferNum, NULL),
+		m_isBgColor(false)
 	{
 		const uint32_t buffSize = m_screenWidth * m_screenHeight;
-		for (auto itr : m_pScreens)
+		for (auto& refItr : m_pScreens)
 		{
-			itr = new SCRN_TYPE[buffSize];
-			assert(itr != NULL);
-			for (uint32_t j = 0u; j < buffSize; ++j) { itr[j] = 0u; }
+			refItr = new SCRN_TYPE[buffSize];
+			assert(refItr != NULL);
+			for (uint32_t j = 0u; j < buffSize; ++j) { refItr[j] = 0u; }
 		}
 	}
 
 	VirtualScreen::~VirtualScreen()
 	{
-		for (auto itr : m_pScreens)
-		{ delete[] itr; }
+		for (auto& refItr : m_pScreens)
+		{
+			delete[] refItr;
+		}
 	}
 
 	void VirtualScreen::Display() const
 	{
+		std::stringstream ss;
+		const std::string opt = (m_isBgColor ? "48" : "38");
+		const std::string colEscSeq = "\x1b[" + opt + ";2;";
+		for (uint32_t i = 0u; i < m_screenHeight; ++i)
+		{
+			for (uint32_t j = 0u; j < m_screenWidth; ++j)
+			{
+				const uint8_t r = GetRGBA(j, i, RED);
+				const uint8_t g = GetRGBA(j, i, GREEN);
+				const uint8_t b = GetRGBA(j, i, BLUE);
+				ss << colEscSeq;
+				ss << std::to_string(r) << ';';
+				ss << std::to_string(g) << ';';
+				ss << std::to_string(b) << 'm';
+				ss << "0";
+			}
+			ss << "\x1b[m";
+			ss << '\n';
+		}
+		std::cout << ss.str();
 	}
 
 	void VirtualScreen::Clear() const
@@ -55,6 +78,13 @@ namespace occ
 		const uint32_t index = CalcIndex_(x, y);
 		const uint32_t val = ConvertRGBA_(r, g, b, a);
 		m_pScreens[m_currentFrameBuffer][index] = val;
+	}
+
+	uint8_t VirtualScreen::GetRGBA(const uint32_t x, const uint32_t y, const uint32_t col) const
+	{
+		const uint32_t index = CalcIndex_(x, y);
+		const uint32_t val = m_pScreens[m_currentFrameBuffer][index];
+		return static_cast<uint8_t>((val >> col) & static_cast<uint8_t>(0xffu));
 	}
 
 	uint32_t VirtualScreen::CalcIndex_(const uint32_t x, const uint32_t y) const

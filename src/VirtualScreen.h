@@ -1,4 +1,4 @@
-#ifndef OCC_VIRTUAL_SCREEN_H
+﻿#ifndef OCC_VIRTUAL_SCREEN_H
 #define OCC_VIRTUAL_SCREEN_H
 
 #include <cstdint>
@@ -13,12 +13,12 @@ namespace occ
 
 		// 色: シフト数
 		// - enumでも良かったけど，キャストがだるいから変数にした
-		inline static constexpr uint32_t RED   = 0u;
+		inline static constexpr uint32_t RED = 0u;
 		inline static constexpr uint32_t GREEN = 8u;
-		inline static constexpr uint32_t BLUE  = 16u;
+		inline static constexpr uint32_t BLUE = 16u;
 		inline static constexpr uint32_t ALPHA = 24u;
 
-		public:
+	public:
 		VirtualScreen(const uint32_t width, const uint32_t height, const uint8_t frameBufferNum);
 		~VirtualScreen();
 
@@ -31,20 +31,26 @@ namespace occ
 
 		// フレームバッファ選択
 		void SelectFrameBuffer(const uint8_t index);
+		
 		// 画素値を設定
-		void SetScreen(const uint32_t x, const uint32_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a=0x00u);
+		void SetScreen(const uint32_t x, const uint32_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a = 0x00u);
 
-		private:
+		// 画素取得
+		uint8_t GetRGBA(const uint32_t x, const uint32_t y, const uint32_t col) const;
+
+	private:
 		uint32_t CalcIndex_(const uint32_t x, const uint32_t y) const;
 
-		SCRN_TYPE ConvertRGBA_(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a=0x00u) const;
+		SCRN_TYPE ConvertRGBA_(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a = 0x00u) const;
 
-		private:
+	private:
 		const uint32_t m_screenWidth, m_screenHeight;
 		const uint8_t m_frameBufferNum;
 
 		uint8_t m_currentFrameBuffer;
 		std::vector<SCRN_TYPE*> m_pScreens;
+
+		bool m_isBgColor;
 	};
 }
 
