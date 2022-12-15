@@ -7,6 +7,8 @@
 #include <string>
 #include <sstream>
 
+#include <Windows.h>
+
 namespace occ
 {
 	VirtualScreen::VirtualScreen(const uint32_t width, const uint32_t height, const uint8_t frameBufferNum):
@@ -47,16 +49,21 @@ namespace occ
 				ss << std::to_string(r) << ';';
 				ss << std::to_string(g) << ';';
 				ss << std::to_string(b) << 'm';
-				ss << "0";
+				ss << "O";
 			}
-			ss << "\x1b[m";
-			ss << '\n';
+			ss << "\x1b[0m\n";
 		}
 		std::cout << ss.str();
 	}
 
 	void VirtualScreen::Clear() const
 	{
+		std::stringstream ss;
+		for (uint32_t i = 0u; i < m_screenHeight; ++i)
+		{
+			ss << "\x1b[1A" << "\x1b[K";
+		}
+		std::cout << ss.str();
 	}
 
 	void VirtualScreen::Reset() const
@@ -71,6 +78,11 @@ namespace occ
 			std::exit(1);
 		}
 		m_currentFrameBuffer = index;
+	}
+
+	void VirtualScreen::EnableBackGroundColor(const bool flag)
+	{
+		m_isBgColor = flag;
 	}
 
 	void VirtualScreen::SetScreen(const uint32_t x, const uint32_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)

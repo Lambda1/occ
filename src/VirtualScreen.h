@@ -32,6 +32,9 @@ namespace occ
 		// フレームバッファ選択
 		void SelectFrameBuffer(const uint8_t index);
 		
+		// 背景色に切り替える
+		void EnableBackGroundColor(const bool flag);
+
 		// 画素値を設定
 		void SetScreen(const uint32_t x, const uint32_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a = 0x00u);
 
