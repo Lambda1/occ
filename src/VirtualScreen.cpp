@@ -7,8 +7,6 @@
 #include <string>
 #include <sstream>
 
-#include <Windows.h>
-
 namespace occ
 {
 	VirtualScreen::VirtualScreen(const uint32_t width, const uint32_t height, const uint8_t frameBufferNum):
