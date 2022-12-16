@@ -10,12 +10,13 @@
 
 int main()
 {
-	occ::VirtualScreen screen(400, 200, 2);
-
-	int r, g, b;
-	for (int i = 0; i < 200; ++i)
+	const uint32_t width = 200u;
+	const uint32_t height = 100u;
+	occ::VirtualScreen screen(width, height, 2);
+	uint16_t r, g, b;
+	for (uint32_t i = 0u; i < height; ++i)
 	{
-		for (int j = 0; j < 400; ++j)
+		for (uint32_t j = 0u; j < width; ++j)
 		{
 			std::cin >> r >> g >> b;
 			screen.SetScreen(j, i, r, g, b);
@@ -30,10 +31,8 @@ int main()
 #endif // _MSC_VER
 
 	screen.EnableBackGroundColor(true);
-	
 	screen.Display();
 	std::this_thread::sleep_for(std::chrono::microseconds(1000000));
-	
 	screen.Clear();
 	std::this_thread::sleep_for(std::chrono::microseconds(1000000));
 
